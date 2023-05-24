@@ -1,0 +1,23 @@
+#import libraries
+import pandas as pd
+
+#config
+configfile: 'config/config.yaml'
+
+#rules
+include: 'rules/wtdbg2.smk'
+
+#load table
+df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
+	.set_index('sample', drop=False)
+	.sort_index()
+)
+
+#run
+rule all:
+    input:
+        expand('results/{sample}/wtdbg2/assembly.ctg.lay.gz', sample=df['sample'].tolist())
+
+rule wtdbg2:
+    input:
+        expand('results/{sample}/wtdbg2/assembly.ctg.lay.gz', sample=df['sample'].tolist())

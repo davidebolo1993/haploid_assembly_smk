@@ -1,0 +1,8 @@
+.vscode
+.vscode/*
+results/*
+resources/*
+.snakemake/*
+logs/*
+!.gitignore
+!*/.gitignore
