@@ -16,8 +16,8 @@ df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
 #run
 rule all:
     input:
-        expand('results/{sample}/wtdbg2/assembly.ctg.lay.gz', sample=df['sample'].tolist())
+        expand('results/{sample}/wtdbg2/assembly.raw.fa', sample=df['sample'].tolist())
 
 rule wtdbg2:
     input:
-        expand('results/{sample}/wtdbg2/assembly.ctg.lay.gz', sample=df['sample'].tolist())
+        expand('results/{sample}/wtdbg2/assembly.raw.fa', sample=df['sample'].tolist())
