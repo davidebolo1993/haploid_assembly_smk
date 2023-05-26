@@ -17,7 +17,7 @@ rule quast_on_cns:
         genes=config['genes'],
         reads=rules.cat_reads.output
     output:
-        'results/{sample}/quast/cns/latest/report.txt'
+        'results/{sample}/quast/cns/report.txt'
     threads:
         config['quast']['threads']
     conda:

@@ -18,7 +18,7 @@ df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
 rule all:
     input:
         expand('results/{sample}/wtdbg2/assembly.cnsp.fa', sample=df['sample'].tolist()),
-        expand('results/{sample}/quast/cns/latest/report.txt', sample=df['sample'].tolist())
+        expand('results/{sample}/quast/cns/report.txt', sample=df['sample'].tolist())
 
 rule wtdbg2:
     input:
@@ -26,4 +26,4 @@ rule wtdbg2:
 
 rule quast:
     input:
-       expand('results/{sample}/quast/cns/latest/report.txt', sample=df['sample'].tolist()) 
+       expand('results/{sample}/quast/cns/report.txt', sample=df['sample'].tolist()) 
