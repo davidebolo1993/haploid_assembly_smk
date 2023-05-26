@@ -6,6 +6,7 @@ configfile: 'config/config.yaml'
 
 #rules
 include: 'rules/wtdbg2.smk'
+include: 'rules/quast.smk'
 
 #load table
 df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
@@ -16,8 +17,13 @@ df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
 #run
 rule all:
     input:
-        expand('results/{sample}/wtdbg2/assembly.raw.fa', sample=df['sample'].tolist())
+        expand('results/{sample}/wtdbg2/assembly.cnsp.fa', sample=df['sample'].tolist()),
+        expand('results/{sample}/quast/cns/latest/report.txt', sample=df['sample'].tolist())
 
 rule wtdbg2:
     input:
-        expand('results/{sample}/wtdbg2/assembly.raw.fa', sample=df['sample'].tolist())
+        expand('results/{sample}/wtdbg2/assembly.cnsp.fa', sample=df['sample'].tolist())
+
+rule quast:
+    input:
+       expand('results/{sample}/quast/cns/latest/report.txt', sample=df['sample'].tolist()) 
