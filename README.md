@@ -1,1 +1,1 @@
-# Template for snakemake pipelines - run on slurm cluster
+## Smk pipeline for haploid assembly
