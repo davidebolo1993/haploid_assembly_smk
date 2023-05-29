@@ -7,6 +7,7 @@ configfile: 'config/config.yaml'
 #rules
 include: 'rules/wtdbg2.smk'
 include: 'rules/quast.smk'
+include: 'rules/canu.smk'
 
 #load table
 df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
@@ -17,13 +18,18 @@ df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
 #run
 rule all:
     input:
-        expand('results/{sample}/wtdbg2/assembly.cnsp.fa', sample=df['sample'].tolist()),
-        expand('results/{sample}/quast/cns/report.txt', sample=df['sample'].tolist())
+        expand('results/{sample}/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist()),
+        expand('results/{sample}/quast/{type}/{platform}/report.txt', sample=df['sample'].tolist(), platform=['ont', 'illumina'], type=['cns', 'srp']),
+        expand('results/{sample}/canu/canu.contigs.fasta', sample=df['sample'].tolist())
 
 rule wtdbg2:
     input:
-        expand('results/{sample}/wtdbg2/assembly.cnsp.fa', sample=df['sample'].tolist())
+        expand('results/{sample}/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist())
 
 rule quast:
     input:
-       expand('results/{sample}/quast/cns/report.txt', sample=df['sample'].tolist()) 
+        expand('results/{sample}/quast/{type}/{platform}/report.txt', sample=df['sample'].tolist(), platform=['ont', 'illumina'], type=['cns', 'srp'])
+
+rule canu:
+    input:
+        expand('results/{sample}/canu/canu.contigs.fasta', sample=df['sample'].tolist())
