@@ -156,7 +156,7 @@ rule samtools_illumina_assembly_sort_sam:
     input:
         rules.bwa_illumina_to_assembly.output
     output:
-        'results/{sample}/assembly/samtools/srt.sam'
+        'results/{sample}/assembly/samtools/alignment.srt.sam'
     threads:
         config['samtools']['threads']
     conda:

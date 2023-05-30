@@ -167,7 +167,7 @@ rule samtools_illumina_sort_index:
     input:
        rules.bwa_mem_illumina_to_reference.output
     output:
-        'results/{sample}/commons/samtools/illumina.srt.bam'
+        'results/{sample}/common/samtools/illumina.srt.bam'
     threads:
         config['samtools']['threads']
     conda:
