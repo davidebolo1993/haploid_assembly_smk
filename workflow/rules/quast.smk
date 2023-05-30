@@ -1,17 +1,3 @@
-rule get_ont_reads:
-    input:
-        lambda wildcards: glob('resources/reads/{sample}/ont/*.gz'.format(sample=wildcards.sample))        
-    output:
-        'results/{sample}/quast/ont.fq.gz'
-    threads:
-        1
-    benchmark:
-        'benchmarks/{sample}.cat_fastq.tsv'
-    shell:
-        '''
-        cat {input} > {output}
-        '''
-
 rule quast_on_cns_nanopore:
     input:
         assembly=rules.wtdbg2_polish_consensus.output,

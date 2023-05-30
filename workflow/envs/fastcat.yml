@@ -1,0 +1,6 @@
+channels:
+  - bioconda
+  - conda-forge
+  - epi2melabs
+dependencies:
+  - fastcat

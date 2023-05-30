@@ -5,9 +5,12 @@ import pandas as pd
 configfile: 'config/config.yaml'
 
 #rules
+include: 'rules/common.smk'
 include: 'rules/wtdbg2.smk'
-include: 'rules/quast.smk'
 include: 'rules/canu.smk'
+include: 'rules/ragtag.smk'
+include: 'rules/quast.smk'
+
 
 #load table
 df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
@@ -20,7 +23,8 @@ rule all:
     input:
         expand('results/{sample}/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist()),
         expand('results/{sample}/quast/{type}/{platform}/report.txt', sample=df['sample'].tolist(), platform=['ont', 'illumina'], type=['cns', 'srp']),
-        expand('results/{sample}/canu/canu.contigs.fasta', sample=df['sample'].tolist())
+        expand('results/{sample}/canu/canu.contigs.fasta', sample=df['sample'].tolist()),
+        expand('results/{sample}/ragtag/patch/wtdbg2/ragtag.patch.fasta',sample=df['sample'].tolist())
 
 rule wtdbg2:
     input:
@@ -33,3 +37,7 @@ rule quast:
 rule canu:
     input:
         expand('results/{sample}/canu/canu.contigs.fasta', sample=df['sample'].tolist())
+
+rule ragtag:
+    input:
+        expand('results/{sample}/ragtag/patch/wtdbg2/ragtag.patch.fasta',sample=df['sample'].tolist())
