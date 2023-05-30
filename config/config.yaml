@@ -2,15 +2,7 @@ reference: resources/reference/GCA_026108075.1_ASM2610807v1_genomic.fna
 genes: resources/genes/GCA_026108075.1_ASM2610807v1_genomic.bed
 samples: config/samples.tsv
 
-wtdbg2_assemble:
-  mem: 40000
-  time: "6:00:00"
-  threads: 20
 
-wtdbg2_consensus:
-  mem: 30000
-  time: "1:30:00"
-  threads: 20
 
 minimap2:
   mem: 10000
@@ -22,11 +14,15 @@ samtools:
   time: "1:00:00"
   threads: 4
 
-quast:
-  mem: 30000
-  time: "10:00:00"
-  threads: 20
+mosdepth:
+  mem: 10000
+  time: "1:00:00"
+  threads: 4
 
+alfred:
+  mem: 10000
+  time: "1:00:00"
+  
 bwa_index:
   mem: 20000
   time: "2:00:00"
@@ -36,12 +32,22 @@ bwa_mem:
   time: "5:00:00"
   threads: 20
 
-canu:
-  mem: 50000
-  time: "24:00:00"
+wtdbg2_assemble:
+  mem: 40000
+  time: "6:00:00"
   threads: 20
 
-ragtag:
-  mem: 20000
-  time: "5:00:00"
-  threads: 8
+wtdbg2_consensus:
+  mem: 30000
+  time: "1:30:00"
+  threads: 20
+
+quast:
+  mem: 30000
+  time: "10:00:00"
+  threads: 20
+
+canu:
+  mem: 50000
+  time: "36:00:00"
+  threads: 32

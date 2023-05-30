@@ -8,9 +8,6 @@ configfile: 'config/config.yaml'
 include: 'rules/common.smk'
 include: 'rules/wtdbg2.smk'
 include: 'rules/canu.smk'
-include: 'rules/ragtag.smk'
-include: 'rules/quast.smk'
-
 
 #load table
 df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
@@ -19,25 +16,24 @@ df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
 )
 
 #run
+
 rule all:
     input:
-        expand('results/{sample}/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist()),
-        expand('results/{sample}/quast/{type}/{platform}/report.txt', sample=df['sample'].tolist(), platform=['ont', 'illumina'], type=['cns', 'srp']),
-        expand('results/{sample}/canu/canu.contigs.fasta', sample=df['sample'].tolist()),
-        expand('results/{sample}/ragtag/patch/wtdbg2/ragtag.patch.fasta',sample=df['sample'].tolist())
+        expand('results/{sample}/common/mosdepth/{platform}.mosdepth.global.dist.txt',sample=df['sample'].tolist(),platform=['ont', 'illumina']),
+        expand('results/{sample}/common/alfred/ont.qc.tsv.gz',sample=df['sample'].tolist()),
+        expand('results/{sample}/assembly/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist()),
+        expand('results/{sample}/assembly/canu/assembly.contigs.fasta', sample=df['sample'].tolist())
+
+
+rule qc:
+    input:
+        expand('results/{sample}/common/mosdepth/{platform}.mosdepth.global.dist.txt',sample=df['sample'].tolist(),platform=['ont', 'illumina']),
+        expand('results/{sample}/common/alfred/ont.qc.tsv.gz',sample=df['sample'].tolist())
 
 rule wtdbg2:
     input:
-        expand('results/{sample}/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist())
-
-rule quast:
-    input:
-        expand('results/{sample}/quast/{type}/{platform}/report.txt', sample=df['sample'].tolist(), platform=['ont', 'illumina'], type=['cns', 'srp'])
+        expand('results/{sample}/assembly/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist())
 
 rule canu:
     input:
-        expand('results/{sample}/canu/canu.contigs.fasta', sample=df['sample'].tolist())
-
-rule ragtag:
-    input:
-        expand('results/{sample}/ragtag/patch/wtdbg2/ragtag.patch.fasta',sample=df['sample'].tolist())
+        expand('results/{sample}/assembly/canu/assembly.contigs.fasta', sample=df['sample'].tolist())

@@ -1,8 +1,8 @@
-rule canu_assemble_ont:
+rule canu_assemble:
     input:
-        lambda wildcards: glob('resources/reads/{sample}/ont/*.gz'.format(sample=wildcards.sample))
+        rules.fastcat_ont_reads.output.reads
     output:
-        'results/{sample}/canu/canu.contigs.fasta'
+        'results/{sample}/assembly/canu/assembly.contigs.fasta'
     threads:
         config['canu']['threads']
     conda:
@@ -11,13 +11,13 @@ rule canu_assemble_ont:
         mem_mb=config['canu']['mem'],
         time=config['canu']['time']
     params:
-        working_directory='results/{sample}/canu',
+        working_directory='results/{sample}/assembly/canu',
     benchmark:
         'benchmarks/{sample}.canu_assemble.tsv',
     shell:
         '''
         canu \
-            -p canu \
+            -p assembly \
             -d {params.working_directory} \
             genomeSize=120m \
             maxInputCoverage=100 \
