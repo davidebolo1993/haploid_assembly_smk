@@ -8,6 +8,15 @@ configfile: 'config/config.yaml'
 include: 'rules/common.smk'
 include: 'rules/wtdbg2.smk'
 include: 'rules/canu.smk'
+include: 'rules/medaka.smk'
+include: 'rules/polypolish.smk'
+include: 'rules/quast.smk'
+include: 'rules/ragtag.smk'
+include: 'rules/repeatmasker.smk'
+include: 'rules/bedops.smk'
+include: 'rules/paf.smk'
+include: 'rules/svim-asm.smk'
+include: 'rules/sniffles.smk'
 
 #load table
 df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
@@ -19,21 +28,53 @@ df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
 
 rule all:
     input:
-        expand('results/{sample}/common/mosdepth/{platform}.mosdepth.global.dist.txt',sample=df['sample'].tolist(),platform=['ont', 'illumina']),
-        expand('results/{sample}/common/alfred/ont.qc.tsv.gz',sample=df['sample'].tolist()),
-        expand('results/{sample}/assembly/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist()),
-        expand('results/{sample}/assembly/canu/assembly.contigs.fasta', sample=df['sample'].tolist())
-
+        'results/all.mosdepth.global.dist.mod.pdf',
+        'results/all.ont.per-read.mod.pdf',
+        'results/all.quast.pdf',
+        'results/common/paf/assemblies.dot.pdf',
+        'results/common/variants/assembly/svim-asm/variants.vcf',
+        'results/common/variants/assembly/sniffles/variants.vcf.gz',
 
 rule qc:
     input:
-        expand('results/{sample}/common/mosdepth/{platform}.mosdepth.global.dist.txt',sample=df['sample'].tolist(),platform=['ont', 'illumina']),
-        expand('results/{sample}/common/alfred/ont.qc.tsv.gz',sample=df['sample'].tolist())
+        expand('results/{sample}/common/alfred/ont.qc.tsv.gz',sample=df['sample'].tolist()),
+        'results/all.mosdepth.global.dist.mod.pdf',
+        'results/all.ont.per-read.mod.pdf'
 
 rule wtdbg2:
     input:
-        expand('results/{sample}/assembly/wtdbg2/assembly.srp.fa', sample=df['sample'].tolist())
+        expand('results/{sample}/assembly/wtdbg2/srp/assembly.srp.fa', sample=df['sample'].tolist())
 
 rule canu:
     input:
         expand('results/{sample}/assembly/canu/assembly.contigs.fasta', sample=df['sample'].tolist())
+
+rule medaka:
+    input:
+        expand('results/{sample}/assembly/medaka/wtdbg2/{type}/consensus.fasta', sample=df['sample'].tolist(), type=['raw', 'cnsp']),
+        expand('results/{sample}/assembly/medaka/canu/consensus.fasta', sample=df['sample'].tolist())
+
+rule polypolish:
+    input:
+        expand('results/{sample}/assembly/polypolish/wtdbg2_medaka/{type}/polished.fasta',  sample=df['sample'].tolist(), type=['raw', 'cnsp']),
+        expand('results/{sample}/assembly/polypolish/canu_medaka/polished.fasta',  sample=df['sample'].tolist()),
+
+rule quast:
+    input:
+        'results/all.quast.pdf'
+
+rule ragtag:
+    input:
+        expand('results/{sample}/assembly/ragtag/scaffold/ragtag.scaffold.fasta',sample=df['sample'].tolist())
+
+rule repeatmasker:
+    input:
+       expand('results/{sample}/assembly/repeatmasker/ragtag.scaffold.fasta.masked',sample=df['sample'].tolist())
+
+rule paf:
+    input:
+        'results/common/paf/assemblies.paf'
+
+rule mapping:
+    input:
+        'results/mapping.vcf.gz'

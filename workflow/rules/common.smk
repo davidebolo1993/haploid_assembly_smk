@@ -1,3 +1,11 @@
+from glob import glob
+import pandas as pd
+
+df=(pd.read_table(config['samples'], dtype={'sample': str, 'path': str})
+	.set_index('sample', drop=False)
+	.sort_index()
+)
+
 rule fastcat_ont_reads:
     input:
         lambda wildcards: glob('resources/reads/{sample}/ont/*.gz'.format(sample=wildcards.sample))        
@@ -10,7 +18,7 @@ rule fastcat_ont_reads:
     conda:
         '../envs/fastcat.yml'
     benchmark:
-        'benchmarks/{sample}.get_ont_reads.tsv'
+        'benchmarks/{sample}.fastcat_ont_reads.tsv'
     params:
         prefix='resources/reads/{sample}/ont'
     shell:
@@ -18,7 +26,66 @@ rule fastcat_ont_reads:
         fastcat -x \
             -f {output.fsummary} \
             -r {output.rsummary} \
-            {params.prefix} > {output}
+            {params.prefix} | pigz > {output}
+        '''
+
+
+rule seqtk_ont_reads:
+    input:
+        rules.fastcat_ont_reads.output.reads
+    output:
+        'results/{sample}/common/seqtk/ont.fasta'
+    threads:
+        1
+    conda:
+        '../envs/seqtk.yml'
+    benchmark:
+        'benchmarks/{sample}.seqtk_ont_reads.tsv'
+    shell:
+        '''
+        seqtk seq \
+            -a {input} > {output}
+        '''
+
+
+rule fastcat_ont_reads_to_plot:
+    input:
+        rules.fastcat_ont_reads.output.rsummary
+    output:
+        'results/{sample}/common/fastcat/ont.per-read.mod.tsv'
+    threads:
+        1
+    params:
+        samplename='{sample}'
+    shell:
+        '''
+        awk -v var="{params.samplename}" '{{OFS=FS="\\t"}}{{print $0 , var}}' {input} | tail -n +2 > {output}
+        '''
+    
+rule fastcat_ont_reads_combine_to_plot:
+    input:
+        expand('results/{sample}/common/fastcat/ont.per-read.mod.tsv', sample=df['sample'].tolist())
+    output:
+        'results/all.ont.per-read.mod.tsv'
+    threads:
+        1
+    shell:
+        '''
+        cat {input} > {output}
+        '''
+
+rule fastcat_ont_reads_plot:
+    input:
+        rules.fastcat_ont_reads_combine_to_plot.output
+    output:
+        'results/all.ont.per-read.mod.pdf'
+    threads:
+        1
+    conda:
+        '../envs/r.yml'
+    shell:
+        '''
+        Rscript workflow/scripts/plotstats.r {input} {output}
         '''
 
 rule minimap2_ont_to_reference:
@@ -211,4 +278,57 @@ rule mosdepth_illumina:
             -t {threads} \
             {params.prefix} \
             {input}
+        '''
+
+rule mosdepth_ont_to_plot:
+    input:
+        rules.mosdepth_ont.output
+    output:
+        'results/{sample}/common/mosdepth/ont.mosdepth.global.dist.mod.txt'
+    threads:
+        1
+    params:
+        samplename='{sample}'
+    shell:
+        '''
+        awk -v var="{params.samplename}" '{{OFS=FS="\\t"}}{{print $0 , var , "ont"}}' {input} > {output}
+        '''
+
+rule mosdepth_illumina_to_plot:
+    input:
+        rules.mosdepth_illumina.output
+    output:
+        'results/{sample}/common/mosdepth/illumina.mosdepth.global.dist.mod.txt'
+    threads:
+        1
+    params:
+        samplename='{sample}'
+    shell:
+        '''
+        awk -v var="{params.samplename}" '{{OFS=FS="\\t"}}{{print $0 , var , "illumina"}}' {input} > {output}
+        '''
+
+rule mosdepth_combine_to_plot:
+    input:
+        expand('results/{sample}/common/mosdepth/{platform}.mosdepth.global.dist.mod.txt', sample=df['sample'].tolist(),platform=['ont', 'illumina'])
+    output:
+        'results/all.mosdepth.global.dist.mod.txt'
+    threads:
+        1
+    shell:
+        '''
+        cat {input} > {output}
+        '''
+rule mosdepth_plot:
+    input:
+        rules.mosdepth_combine_to_plot.output
+    output:
+        'results/all.mosdepth.global.dist.mod.pdf'
+    threads:
+        1
+    conda:
+        '../envs/r.yml'
+    shell:
+        '''
+        Rscript workflow/scripts/plotcov.r {input} {output}
         '''

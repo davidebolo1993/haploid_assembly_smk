@@ -1,0 +1,6 @@
+channels:
+  - bioconda
+  - conda-forge
+  - epi2melabs
+dependencies:
+  - medaka=1.8.0

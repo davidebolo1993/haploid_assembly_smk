@@ -2,7 +2,7 @@
 
 usage() { echo "Usage: $0 [-n <ont>] [-i <illumina>] [-r <reference>] [-t <table>] [-g <genes>]" 1>&2; exit 1; }
 
-while getopts ":n:i:r:t:" o; do
+while getopts ":n:i:r:t:g:" o; do
     case "${o}" in
         n)
             n=${OPTARG}
@@ -41,8 +41,8 @@ mkdir $reference_base
 reference_path=$(readlink -f $r)
 reference_name=$(basename $reference_path)
 ln -sf $reference_path $reference_base/$reference_name
-echo -e "reference: resources/reference/$reference_name" > config/config.yaml
-echo -e "samples: samples.tsv" >> config/config.yaml
+#echo -e "reference: resources/reference/$reference_name" > config/config.yaml
+#echo -e "samples: samples.tsv" >> config/config.yaml
 
 #genes gtf/bed
 genes_base=$(readlink -f $snake_base/resources/genes)
@@ -50,7 +50,7 @@ mkdir -p $gene_base
 genes_path=$(readlink -f $g)
 genes_name=$(basename $genes_path)
 ln -sf $genes_path $genes_base/$genes_name
-echo -e "genes: resources/genes/$genes_name" >> config/config.yaml
+#echo -e "genes: resources/genes/$genes_name" >> config/config.yaml
 
 #table
 table=$(readlink -f $t)

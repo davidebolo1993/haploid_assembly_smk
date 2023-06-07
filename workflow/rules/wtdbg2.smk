@@ -4,7 +4,7 @@ rule wtdbg2_assemble:
     input:
        rules.fastcat_ont_reads.output.reads
     output:
-        'results/{sample}/assembly/wtdbg2/assembly.ctg.lay.gz'
+        'results/{sample}/assembly/wtdbg2/raw/assembly.ctg.lay.gz'
     threads:
         config['wtdbg2_assemble']['threads']
     conda:
@@ -13,7 +13,7 @@ rule wtdbg2_assemble:
         mem_mb=config['wtdbg2_assemble']['mem'],
         time=config['wtdbg2_assemble']['time']
     params:
-        prefix='results/{sample}/assembly/wtdbg2/assembly'
+        prefix='results/{sample}/assembly/wtdbg2/raw/assembly'
     benchmark:
         'benchmarks/{sample}.wtdbg2_assemble.tsv'
     shell:
@@ -30,7 +30,7 @@ rule wtdbg2_consensus:
     input:
         rules.wtdbg2_assemble.output
     output:
-        'results/{sample}/assembly/wtdbg2/assembly.raw.fa'
+        'results/{sample}/assembly/wtdbg2/raw/assembly.raw.fa'
     threads:
         config['wtdbg2_consensus']['threads']
     conda:
@@ -51,7 +51,7 @@ rule wtdbg2_consensus:
 rule minimap2_ont_to_assembly:
     input:
         reference=rules.wtdbg2_consensus.output,
-        reads=rules.fastcat_ont_reads.output
+        reads=rules.fastcat_ont_reads.output.reads
     output:
         'results/{sample}/assembly/minimap2/ont.sam'
     threads:
@@ -92,7 +92,7 @@ rule wtdbg2_polish_consensus:
         reads=rules.samtools_ont_assembly_filter_sort.output,
         assembly=rules.wtdbg2_consensus.output
     output:
-        'results/{sample}/assembly/wtdbg2/assembly.cnsp.fa'
+        'results/{sample}/assembly/wtdbg2/cnsp/assembly.cnsp.fa'
     threads:
         config['wtdbg2_consensus']['threads']
     conda:
@@ -115,7 +115,7 @@ rule bwa_index_assembly:
     input:
         rules.wtdbg2_polish_consensus.output
     output:
-        multiext('results/{sample}/assembly/wtdbg2/assembly.cnsp.fa', '.amb', '.ann', '.bwt', '.pac', '.sa')
+        multiext('results/{sample}/assembly/wtdbg2/cnsp/assembly.cnsp.fa', '.amb', '.ann', '.bwt', '.pac', '.sa')
     threads:
         1
     conda:
@@ -176,7 +176,7 @@ rule wtdbg2_polish_illumina:
         reads=rules.samtools_illumina_assembly_sort_sam.output,
         assembly=rules.wtdbg2_polish_consensus.output
     output:
-        'results/{sample}/assembly/wtdbg2/assembly.srp.fa'
+        'results/{sample}/assembly/wtdbg2/srp/assembly.srp.fa'
     threads:
         config['wtdbg2_consensus']['threads']
     conda:

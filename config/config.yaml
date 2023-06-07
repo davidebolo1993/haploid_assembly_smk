@@ -2,12 +2,10 @@ reference: resources/reference/GCA_026108075.1_ASM2610807v1_genomic.fna
 genes: resources/genes/GCA_026108075.1_ASM2610807v1_genomic.bed
 samples: config/samples.tsv
 
-
-
 minimap2:
-  mem: 10000
+  mem: 20000
   time: "2:00:00"
-  threads: 20
+  threads: 10
 
 samtools:
   mem: 10000
@@ -43,11 +41,44 @@ wtdbg2_consensus:
   threads: 20
 
 quast:
-  mem: 30000
-  time: "10:00:00"
+  mem: 10000
+  time: "2:00:00"
   threads: 20
 
 canu:
-  mem: 50000
-  time: "36:00:00"
+  mem: 300000
+  time: "72:00:00"
   threads: 32
+
+medaka:
+  mem: 5000
+  time: "4:00:00"
+  threads: 8
+  model: 'r1041_e82_400bps_sup_v4.1.0'
+
+polypolish:
+  mem: 100000
+  time: "6:00:00"
+
+ragtag:
+  threads: 8
+  mem: 20000
+  time: "3:00:00"
+
+repeatmasker:
+  time: "3:00:00"
+  mem: 5000
+  threads: 16
+
+bedops:
+  time: "00:10:00"
+  mem: 1000
+
+sniffles:
+  time: "1:00:00"
+  mem: 1000
+  threads: 4
+
+svim-asm:
+  time: "1:30:00"
+  mem: 1000
